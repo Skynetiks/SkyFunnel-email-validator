@@ -1,0 +1,6 @@
+{
+  "watch": ["."],
+  "ext": ".ts,.js",
+  "ignore": [],
+  "exec": "concurrently \"npx tsx server.ts\" \"npx tsx worker.ts\""
+}
