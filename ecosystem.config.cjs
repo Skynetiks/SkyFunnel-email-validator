@@ -2,7 +2,8 @@ module.exports = {
 	apps: [
 		{
 			name: 'skyfunnel-email-validator',
-			script: './dist/server.js',
+			script: './node_modules/.bin/tsx',
+			args: "server.ts",
 			watch: true,
 			env_production: {
 				NODE_ENV: 'production',
@@ -12,7 +13,8 @@ module.exports = {
 		},
 		{
 			name: 'skyfunnel-email-validator-worker',
-			script: './dist/worker.js',
+			script: './node_modules/.bin/tsx',
+			args: "worker.ts",
 			watch: true,
 			env_production: {
 				NODE_ENV: 'production',
