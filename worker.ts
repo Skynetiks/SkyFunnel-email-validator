@@ -100,7 +100,7 @@ export async function initializeWorker() {
 		return job.data;
 	}, {
 		connection,
-		concurrency: 100,
+		concurrency: 20,
 	});
 
 	console.log("Worker initialized");
