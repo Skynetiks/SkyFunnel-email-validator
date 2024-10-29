@@ -56,7 +56,7 @@ const handleJob = async ({ email, organizationId, contactListId, taskId }: JobDa
 	if (existingEmail.rows.length > 0) {
 		verificationStatus = existingEmail.rows[0].emailStatus;
 	} else {
-		const verifiedEmail = await verifyEmail(email, !(!!organizationId || !!contactListId));
+		const verifiedEmail = await verifyEmail(email);
 		// const verifiedEmail = await verifyEmail(email, false);
 
 		verificationStatus = verifiedEmail.status;

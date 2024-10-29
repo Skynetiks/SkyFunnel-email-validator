@@ -2,7 +2,7 @@ import { sendVerificationEmail } from "./sendMail";
 import { verifyEmailUsingIMAP } from "./verifyUsingIMAP";
 import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
 
-export async function EmailVerifier(email: string, firstName: string, verificationByIMAP = true, waitingTime = 2000) {
+export async function EmailVerifier(email: string, firstName: string, waitingTime = 2000) {
 	if (!email) {
 		throw new Error("Email is required.");
 	}
@@ -13,7 +13,7 @@ export async function EmailVerifier(email: string, firstName: string, verificati
 
 	let isEmailDelivered = undefined;
 
-	if (isMXVerified && verificationByIMAP) {
+	if (isMXVerified) {
 		await sendVerificationEmail(email, firstName);
 
 		console.log(`[VerifyEmail] Sent verification email to: ${email}`);
