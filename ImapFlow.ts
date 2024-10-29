@@ -35,6 +35,8 @@ export async function getImapClient() {
       greetingTimeout: 30000
     });
   }
+  // Update if increase worker concurrency
+  instance.setMaxListeners(20);
   return instance;
 }
 
