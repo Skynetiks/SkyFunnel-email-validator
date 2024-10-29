@@ -12,27 +12,45 @@ const SubjectMap = {
 	UndeliveredMail: "Undelivered Mail Returned to Sender",
 } as const;
 
+class ImapClientSingleton {
+	private static instance: ImapFlow | null = null;
+
+	private constructor() {}
+
+	static getInstance(credentials: { user: string; pass: string }): ImapFlow {
+		if (!this.instance) {
+			const { host, port, secure } = providerConfig;
+			this.instance = new ImapFlow({
+				host,
+				port,
+				secure,
+				auth: credentials,
+				logger: false,
+			});
+		}
+		return this.instance;
+	}
+
+	static async disconnect() {
+		if (this.instance) {
+			await this.instance.logout();
+			this.instance = null;
+			console.log("Logged out from the email provider.");
+		}
+	}
+}
+
 async function getEmailStatus(
 	email: { subject: string },
 	credentials: { user: string; pass: string },
 	verifyingEmail: string,
 ) {
-	const { user, pass } = credentials;
-	const { host, port, secure } = providerConfig;
-
-	const client = new ImapFlow({
-		host,
-		port,
-		secure,
-		auth: { user, pass },
-		logger: false,
-	});
-
+	const client = ImapClientSingleton.getInstance(credentials);
 	let isEmailFound = false;
 
 	try {
 		await client.connect();
-		console.log(`[FetchEmail] Connected to the email provider for user: ${user}`);
+		console.log(`[FetchEmail] Connected to the email provider for user: ${credentials.user}`);
 
 		await client.mailboxOpen(providerConfig.spamFolder);
 
@@ -53,8 +71,6 @@ async function getEmailStatus(
 		for await (const result of results) {
 			if (result.envelope.subject.includes(email.subject)) {
 				const emailBody = result.source.toString();
-				// console.log(`[FetchEmail] Full Email:\n${emailBody}`);
-
 				const foundEmail = await extractUndeliveredMessage(emailBody);
 				if (foundEmail?.includes(verifyingEmail)) {
 					isEmailFound = true;
@@ -70,8 +86,7 @@ async function getEmailStatus(
 			error: err,
 		});
 	} finally {
-		await client.logout();
-		console.log("Logged out from the email provider.");
+		await ImapClientSingleton.disconnect();
 	}
 }
 
