@@ -32,6 +32,7 @@ export async function getImapClient() {
       secure,
       auth: credentials,
       logger: false,
+      greetingTimeout: 30000
     });
   }
   return instance;
