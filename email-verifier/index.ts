@@ -1,5 +1,5 @@
 import { sendVerificationEmail } from "./sendMail";
-import { verifyEmailUsingIMAP } from "./verifyUsingIMAP";
+import { verifyEmailDeliveryStatus } from "./verifyUsingIMAP";
 import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
 
 export async function EmailVerifier(email: string, firstName: string, waitingTime = 2000) {
@@ -20,7 +20,7 @@ export async function EmailVerifier(email: string, firstName: string, waitingTim
 
 		await new Promise((resolve) => setTimeout(resolve, waitingTime));
 
-		const isEmailUndelivered = await verifyEmailUsingIMAP("UndeliveredMail", email);
+		const isEmailUndelivered = await verifyEmailDeliveryStatus("UndeliveredMail", email);
 
 		isEmailDelivered = !isEmailUndelivered;
 	}

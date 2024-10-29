@@ -65,21 +65,6 @@ const handleJob = async ({ email, organizationId, contactListId, taskId }: JobDa
 		}
 	}
 
-	// const client = await getRedisConnection();
-	// if (!client) {
-	// 	throw new Error('Redis connection not available');
-	// }
-
-	// const key = `taskId:${taskId}-progress`;
-	//
-	// try {
-	// 	const existingProgress = await client.get(key) || "0";
-	// 	const newProgress = parseInt(existingProgress) + 1;
-	//
-	// 	client.set(key, newProgress, 'EX', 24 * 60 * 60);
-	// } catch (error) {
-	// 	console.error("error updating progress", error);
-	// }
 
 	if (organizationId) {
 		// console.log(`Updating organization's lead's ${email} email status`);
@@ -121,7 +106,7 @@ export async function initializeWorker() {
 	console.log("Worker initialized");
 
 	worker.on('completed', job => {
-		console.log(`Job completed with result ${job.returnvalue}`);
+		console.log(`Job completed with result ${JSON.stringify(job.returnvalue)}`);
 	});
 
 	worker.on('failed', (job, err) => {
@@ -133,4 +118,6 @@ export async function initializeWorker() {
 	});
 }
 
-initializeWorker();
+(async () => {
+	await initializeWorker();
+})();
