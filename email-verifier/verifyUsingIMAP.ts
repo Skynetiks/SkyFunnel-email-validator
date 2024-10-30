@@ -94,6 +94,9 @@ export async function verifyEmailDeliveryStatus(
 	} catch (err) {
 	  console.error("[FetchEmail] Error in IMAP connection:", err);
 	  return false;
+	} finally {
+		client.logout();
+		client.close();
 	}
   //   await client.logout();
 	return isEmailFound;
