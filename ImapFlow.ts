@@ -32,11 +32,11 @@ export async function getImapClient() {
       secure,
       auth: credentials,
       logger: false,
-      greetingTimeout: 30000
+      greetingTimeout: 30000,
     });
   }
-  // Update if increase worker concurrency
-  instance.setMaxListeners(20);
+  // Update if worker concurrency > 10
+  //   instance.setMaxListeners(20);
   return instance;
 }
 
