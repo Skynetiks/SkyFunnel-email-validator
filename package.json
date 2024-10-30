@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "start": "concurrently \"npx tsx server.ts\" \"npx tsx worker.ts\"",
 		"start:server": "tsc && node ./dist/server.js",
 		"start:worker": "tsc && node ./dist/worker.js",
@@ -40,6 +40,7 @@
     "@types/nodemailer": "^6.4.16",
     "concurrently": "^9.0.1",
     "tsx": "^4.19.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.4"
   }
 }
