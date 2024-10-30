@@ -2,7 +2,7 @@ import { sendVerificationEmail } from "./sendMail";
 import { verifyEmailDeliveryStatus } from "./verifyUsingIMAP";
 import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
 
-export async function EmailVerifier(email: string, firstName: string, waitingTime = 2000) {
+export async function EmailVerifier(email: string, firstName: string, waitingTime = 500) {
 	if (!email) {
 		throw new Error("Email is required.");
 	}
