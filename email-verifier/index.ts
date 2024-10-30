@@ -1,5 +1,4 @@
 import { sendVerificationEmail } from "./sendMail";
-import { verifyEmailDeliveryStatus } from "./verifyUsingIMAP";
 import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
 
 export async function EmailVerifier(email: string, firstName: string, waitingTime = 2000) {

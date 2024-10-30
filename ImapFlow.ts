@@ -1,12 +1,5 @@
 import { ImapFlow } from "imapflow";
 
-export const providerConfig = {
-  host: "box.skyfunnel.us",
-  port: 993,
-  secure: true,
-  spamFolder: "Inbox",
-};
-
 let instance: ImapFlow | null = null;
 
 export async function getImapClient() {
@@ -34,9 +27,10 @@ export async function getImapClient() {
       logger: false,
       greetingTimeout: 30000,
     });
+    await instance.connect()
   }
   // Update if worker concurrency > 10
-  //   instance.setMaxListeners(20);
+    instance.setMaxListeners(20);
   return instance;
 }
 

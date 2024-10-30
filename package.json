@@ -6,8 +6,8 @@
   "scripts": {
     "test": "vitest",
     "start": "concurrently \"npx tsx server.ts\" \"npx tsx worker.ts\"",
-		"start:server": "tsc && node ./dist/server.js",
-		"start:worker": "tsc && node ./dist/worker.js",
+    "start:server": "tsc && node ./dist/server.js",
+    "start:worker": "tsc && node ./dist/worker.js",
     "dev": "set DEBUG=express:* & npx ts-node server.ts"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
   "dependencies": {
     "@devmehq/email-validator-js": "^1.0.19",
     "@types/pg": "^8.11.6",
+    "async-mutex": "^0.5.0",
     "body-parser": "^1.20.3",
     "bullmq": "^5.8.0",
     "dotenv": "^16.4.5",
