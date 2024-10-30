@@ -1,11 +1,8 @@
 import dotenv from "dotenv";
 
 import { sendVerificationEmail } from "../email-verifier/sendMail";
-import { verifyEmailUsingIMAP } from "../email-verifier/verifyUsingIMAP";
+import { verifyEmailDeliveryStatus } from "../email-verifier/verifyUsingIMAP";
 import { describe, it, expect, beforeEach, vi, test } from "vitest";
-
-import { ImapFlow } from "imapflow";
-import { simpleParser } from "mailparser";
 
 dotenv.config();
 
@@ -21,7 +18,7 @@ describe("Checking Imap Verification", () => {
 
       await new Promise((resolve) => setTimeout(resolve, waitingTime));
 
-      const isEmailUndelivered = await verifyEmailUsingIMAP(
+      const isEmailUndelivered = await verifyEmailDeliveryStatus(
         "UndeliveredMail",
         FAKE_EMAIL
       );
@@ -41,7 +38,7 @@ describe("Checking Imap Verification", () => {
 
       await new Promise((resolve) => setTimeout(resolve, waitingTime));
 
-      const isEmailUndelivered = await verifyEmailUsingIMAP(
+      const isEmailUndelivered = await verifyEmailDeliveryStatus(
         "UndeliveredMail",
         CORRECT_EMAIL
       );
@@ -54,7 +51,7 @@ describe("Checking Imap Verification", () => {
     "Should Handle Concurrent Email Verifications for 10 Emails",
     async () => {
       const generate10FakeEmails = () => {
-        return Array.from({ length: 10 }, (_, i) => `fake${(Math.random() * 1000).toFixed(0)}@somethingrandommx.com`);
+        return Array.from({ length: 25 }, (_, i) => `fake${(Math.random() * 1000).toFixed(0)}@somethingrandommx.com`);
       };
       const emails = generate10FakeEmails();
       const firstName = "John";
@@ -70,7 +67,7 @@ describe("Checking Imap Verification", () => {
   
       // Verify that each email is marked as undelivered
       const undeliveredStatuses = await Promise.all(
-        emails.map(email => verifyEmailUsingIMAP("UndeliveredMail", email))
+        emails.map(email => verifyEmailDeliveryStatus("UndeliveredMail", email))
       );
   
       // Expect all to be true (all emails undelivered)
