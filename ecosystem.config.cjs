@@ -19,7 +19,8 @@ module.exports = {
 			watch: true,
 			output: './logs/worker-out.log',
 			error: './logs/worker-error.log',
-			instances: 3,
+			instances: 10,
+			max_memory_restart: '100M',
 			env_production: {
 				NODE_ENV: 'production',
 				// Add other environment variables here
