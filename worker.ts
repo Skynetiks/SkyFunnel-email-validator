@@ -82,6 +82,7 @@ const handleJob = async ({
   );
   if (existingEmail.rows.length > 0) {
     verificationStatus = existingEmail.rows[0].emailStatus;
+    console.log(email+" found in validated emails: "+verificationStatus)
   } else {
     const verifiedEmail = await verifyEmail(email);
     verificationStatus = verifiedEmail.status;
