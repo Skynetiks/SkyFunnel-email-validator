@@ -19,7 +19,7 @@ module.exports = {
 			watch: true,
 			output: './logs/worker-out.log',
 			error: './logs/worker-error.log',
-			instances: 2,
+			instances: 3,
 			env_production: {
 				NODE_ENV: 'production',
 				// Add other environment variables here
