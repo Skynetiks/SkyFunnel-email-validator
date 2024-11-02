@@ -15,7 +15,10 @@ module.exports = {
 			name: 'skyfunnel-email-validator-worker',
 			script: './node_modules/.bin/tsx',
 			args: "worker.ts",
+			exec_mode: 'cluster',
 			watch: true,
+			output: './logs/worker-out.log',
+			error: './logs/worker-error.log',
 			instances: 3,
 			env_production: {
 				NODE_ENV: 'production',
