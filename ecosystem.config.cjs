@@ -17,6 +17,8 @@ module.exports = {
 			args: "worker.ts",
 			exec_mode: 'cluster',
 			watch: true,
+			output: './logs/worker-out.log',
+			error: './logs/worker-error.log',
 			instances: 2,
 			env_production: {
 				NODE_ENV: 'production',
