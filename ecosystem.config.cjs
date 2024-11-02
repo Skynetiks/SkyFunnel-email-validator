@@ -16,6 +16,7 @@ module.exports = {
 			script: './node_modules/.bin/tsx',
 			args: "worker.ts",
 			watch: true,
+			instances: 3,
 			env_production: {
 				NODE_ENV: 'production',
 				// Add other environment variables here

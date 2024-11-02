@@ -14,6 +14,7 @@ export async function addEmailsToQueue({ emails, organizationId, contactListId, 
 		name: `verify-email-${i}`,
 		data: { email: email, organizationId, contactListId, taskId },
 		opts: {
+			jobId:`verify-email-${email}`,
 			removeOnComplete: true,
 			removeOnFail: true,
 			attempts: 3,
