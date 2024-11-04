@@ -11,9 +11,9 @@ export async function EmailVerifier(email: string, firstName: string, waitingTim
 
 	// console.log(`[VerifyEmail] Email: ${email}, isEmailValid: ${isEmailValid}`);
 
-	let isEmailDelivered = undefined;
+	let isEmailDelivered = false;
 
-	if (isMXVerified) {
+	if (isMXVerified && isSMTPVerified!=false) {
 		await sendVerificationEmail(email, firstName);
 
 		console.log(`[VerifyEmail] Sent verification email to: ${email}`);
