@@ -13,7 +13,7 @@ export async function EmailVerifier(email: string, firstName: string, waitingTim
 
 	let isEmailDelivered = false;
 
-	if (isMXVerified && isSMTPVerified!=false) {
+	if (isMXVerified && isSMTPVerified!==false) {
 		await sendVerificationEmail(email, firstName);
 
 		console.log(`[VerifyEmail] Sent verification email to: ${email}`);
