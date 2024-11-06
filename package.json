@@ -6,8 +6,8 @@
   "scripts": {
     "test": "vitest",
     "start": "concurrently \"npx tsx server.ts\" \"npx tsx worker.ts\"",
-		"start:server": "tsc && node ./dist/server.js",
-		"start:worker": "tsc && node ./dist/worker.js",
+    "start:server": "tsc && node ./dist/server.js",
+    "start:worker": "tsc && node ./dist/worker.js",
     "dev": "set DEBUG=express:* & npx ts-node server.ts"
   },
   "keywords": [],
@@ -20,6 +20,8 @@
     "body-parser": "^1.20.3",
     "bullmq": "^5.8.0",
     "dotenv": "^16.4.5",
+    "email-misspelled": "^4.3.0",
+    "emailvalid": "^1.0.4",
     "express": "^4.19.2",
     "imapflow": "^1.0.164",
     "ioredis": "^5.4.1",
