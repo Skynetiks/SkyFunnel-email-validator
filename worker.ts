@@ -174,12 +174,17 @@ async function onTaskComplete(taskId: number, jobId: string) {
 	const failed = progress?.failed ? JSON.parse(progress.failed) : [];
 	const newFailed = failed.filter((id: string) => id !== jobId);
 
-	await client.hmset(`taskId:${taskId}`, {
-		...progress,
-		completed: newCompleted,
-		pending: newPending,
-		failed: JSON.stringify(newFailed),
-	});
+	if (newPending === 0) {
+		console.log("Deleting task");
+		await client.del(`taskId:${taskId}`);
+	} else {
+		await client.hmset(`taskId:${taskId}`, {
+			...progress,
+			completed: newCompleted,
+			pending: newPending,
+			failed: JSON.stringify(newFailed),
+		});
+	}
 }
 
 async function onTaskFail(taskId: number, jobId: string) {

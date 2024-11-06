@@ -56,7 +56,7 @@ app.post("/verify-emails", async (req, res) => {
 	}
 
 	await client.hmset(`taskId:${taskId}`, redisData);
-	await client.expire(`taskId:${taskId}`, 86400); // 1 day
+	await client.expire(`taskId:${taskId}`, 86400 * 3); // 3 days
 
 	try {
 		await addEmailsToQueue({ emails: validatedEmails.data, organizationId, contactListId, taskId });
