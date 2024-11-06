@@ -77,7 +77,7 @@ export async function sendVerificationEmail(to: string, firstName: string) {
 										</h2>
 										<div style="padding: 16px 24px 16px 24px">
 											<img
-												alt="Sample product"
+												alt="SkyFunnel Banner"
 												src="https://theprospect.s3.us-east-1.amazonaws.com/blog/1720314225439-7038058.jpg"
 												style="
 													outline: none;
@@ -369,7 +369,7 @@ export async function sendVerificationEmail(to: string, firstName: string) {
 										</div>
 										<div style="padding: 0px 0px 0px 0px; text-align: center">
 											<img
-												alt="Sample product"
+												alt="SkyFunnel AI"
 												src="https://theprospect.s3.us-east-1.amazonaws.com/blog/1727684494865-skyfunnel-full-logo.png"
 												width="200"
 												height="100"
