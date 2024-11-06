@@ -128,7 +128,7 @@ export async function initializeWorker() {
     },
     {
       connection,
-      concurrency: 2,
+      concurrency: 1,
     }
   );
 
