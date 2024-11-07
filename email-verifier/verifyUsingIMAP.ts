@@ -54,7 +54,9 @@ export async function verifyEmailDeliveryStatus(
 
     // Step 2: If no email is found in Inbox, search in Spam
     if (!isEmailFound) {
-      console.log("[FetchEmail] No undelivered email found in Inbox. Checking Spam folder.");
+      console.log(
+        "[FetchEmail] No undelivered email found in Inbox. Checking Spam folder."
+      );
       await client.mailboxOpen(providerConfig.spamFolder);
       isEmailFound = await searchFolder(client, keywords, email);
     }
@@ -68,7 +70,11 @@ export async function verifyEmailDeliveryStatus(
   return isEmailFound;
 }
 
-async function searchFolder(client: ImapFlow, keywords: string[], email: string) {
+async function searchFolder(
+  client: ImapFlow,
+  keywords: string[],
+  email: string
+) {
   for (const keyword of keywords) {
     const searchResult = await client.search({
       header: { subject: keyword },
@@ -80,10 +86,11 @@ async function searchFolder(client: ImapFlow, keywords: string[], email: string)
         `[FetchEmail] No emails found with subject keyword: ${keyword}`
       );
       continue;
-    } else if(searchResult.length > 0){
-		return true;
-	}
-
+    } else if (searchResult.length > 0) {
+      await client.messageDelete(searchResult);
+      console.log("Email found. Deleting email...");
+      return true;
+    }
   }
   return false; // No email found
 }

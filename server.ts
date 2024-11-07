@@ -28,7 +28,7 @@ app.post("/verify-emails", async (req, res) => {
 		return;
 	}
 
-	const { emails, organizationId, contactListId } = req.body;
+	const { emails, organizationId, contactListId, userId } = req.body;
 	const validatedEmails = z.array(z.string()).nonempty().safeParse(emails);
 	if (!validatedEmails.success) {
 		return res.status(400).json({
@@ -37,7 +37,26 @@ app.post("/verify-emails", async (req, res) => {
 		});
 	}
 
-	const taskId = Math.round(new Date().getTime() * Math.random() * 1000);
+	const taskId = userId || Math.round(new Date().getTime() * Math.random() * 1000);
+	const redisData = {
+		taskId,
+		total: validatedEmails.data.length,
+		pending: validatedEmails.data.length,
+		failed: [],
+		completed: 0,
+	};
+
+	const client = await getRedisConnection();
+
+	if (!client) {
+		return res.status(500).json({
+			success: false,
+			message: "Failed to get redis connection",
+		});
+	}
+
+	await client.hmset(`taskId:${taskId}`, redisData);
+	await client.expire(`taskId:${taskId}`, 86400 * 3); // 3 days
 
 	try {
 		await addEmailsToQueue({ emails: validatedEmails.data, organizationId, contactListId, taskId });
@@ -54,10 +73,9 @@ app.post("/verify-emails", async (req, res) => {
 			message: "Failed to add emails to queue",
 		});
 	}
-
 });
 
-app.get("/check-status", async (req, res) => {
+app.post("/check-status", async (req, res) => {
 	try {
 		const { taskId } = req.body;
 		if (!taskId) {
@@ -75,12 +93,16 @@ app.get("/check-status", async (req, res) => {
 			});
 		}
 
-		const completed = await client.get(`taskId:${taskId}-progress`) || 0;
+		const progress = await client.hgetall(`taskId:${taskId}`) || 0;
+		const failed = progress?.failed ? JSON.parse(progress.failed) : [];
 
 		return res.status(200).json({
 			success: true,
 			message: "Task status",
-			completed
+			progress: {
+				...progress,
+				failed
+			}
 		});
 	} catch (error) {
 		return res.status(500).json({
