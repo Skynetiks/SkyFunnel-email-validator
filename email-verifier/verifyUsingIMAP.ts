@@ -81,6 +81,8 @@ async function searchFolder(client: ImapFlow, keywords: string[], email: string)
       );
       continue;
     } else if(searchResult.length > 0){
+			console.log("Email removed from inbox");
+			await client.messageDelete(searchResult);
 		return true;
 	}
 
