@@ -18,6 +18,9 @@ declare module "emailvalid" {
   
       // Method to add an email domain to the blacklist
       blacklist(email: string): void;
+
+      // Method to add an email domain to the whitelist
+      whitelist(email: string): void;
   
       // Method to check if an email is valid
       check(email: string): ValidationResult;

@@ -14,6 +14,8 @@ export async function InvalidEspCheck(email: string) {
     const blacklistedEsp = await getBlacklistedDomains();;
     const ev = new EmailValidation();
     ev.setOptions({ allowFreemail: true });
+    ev.whitelist('rediff.com')
+    ev.whitelist('rediffmail.com')
     blacklistedEsp.forEach((esp: {id: string, domain: string}) => {
       ev.blacklist(esp.domain);
     });

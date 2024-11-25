@@ -1,32 +1,26 @@
 import pg from "pg";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
 const { Pool } = pg;
+dotenv.config();
 
-let activePool: pg.Pool;
-
-async function getPool() {
-	if (!activePool) {
-		activePool = new Pool({
-			connectionString: process.env.DATABASE_URL,
-		});
-	}
-	// Log pool errors
-	activePool.on("error", (err) => {
-		console.error("Unexpected error on idle client", err);
-		process.exit(-1);
-	});
-	return activePool;
-}
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    ca: fs.readFileSync("certs/us-east-1-bundle.pem"),
+  },
+});
 
 export const query = async (text: string, params: (string | number)[]) => {
-	try {
-		const pool = await getPool();
-		const result = await pool.query(text, params);
-		return result;
-	} catch (error) {
-		console.error("[Query] Error executing query:", error);
-		throw error;
-	}
+  try {
+    const result = await pool.query(text, params);
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
+export default pool;
