@@ -11,14 +11,14 @@ export async function EmailVerifier(
     throw new Error("Email is required.");
   }
 
-  const isEspValid = await InvalidEspCheck(email);
-  if (!isEspValid) {
-    console.log(`[VerifyEmail] Email: ${email}, isEspValid: ${isEspValid}`);
-    return false;
-  }
+  // const isEspValid = await InvalidEspCheck(email);
+  // if (!isEspValid) {
+  //   console.log(`[VerifyEmail] Email: ${email}, isEspValid: ${isEspValid}`);
+  //   return false;
+  // }
 
   // const { isMXVerified, isSMTPVerified } = await checkMXRecordsAndSMTP(email);
-  const splitEmail = email.split('@');
+  const splitEmail = email.trim().split('@');
   const dns = new DNS2();
 	const mxRecords = (await dns.resolve(splitEmail[1], "MX")).answers;
 
@@ -27,7 +27,7 @@ export async function EmailVerifier(
 
   // let isEmailDelivered = false;
 
-  if (isEspValid && mxRecords.length > 0) {
+  if (mxRecords.length > 0) {
     // 	await sendVerificationEmail(email, firstName);
 
     // 	console.log(`[VerifyEmail] Sent verification email to: ${email}`);
