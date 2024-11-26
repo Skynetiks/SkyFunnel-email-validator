@@ -76,17 +76,17 @@ const handleJob = async ({
 }: JobData) => {
 	let verificationStatus;
 
-	const existingEmail = await query(
-		'SELECT * FROM "ValidatedEmail" WHERE "email" = $1',
-		[email]
-	);
-	if (existingEmail.rows.length > 0) {
-		verificationStatus = existingEmail.rows[0].emailStatus;
-		console.log(email + " found in validated emails: " + verificationStatus)
-	} else {
+	// const existingEmail = await query(
+	// 	'SELECT * FROM "ValidatedEmail" WHERE "email" = $1',
+	// 	[email]
+	// );
+	// if (existingEmail.rows.length > 0) {
+	// 	verificationStatus = existingEmail.rows[0].emailStatus;
+	// 	console.log(email + " found in validated emails: " + verificationStatus)
+	// } else {
 		const verifiedEmail = await verifyEmail(email);
 		verificationStatus = verifiedEmail.status;
-	}
+	// }
 
 	if (organizationId) {
 		// console.log(`Updating organization's lead's ${email} email status`);
