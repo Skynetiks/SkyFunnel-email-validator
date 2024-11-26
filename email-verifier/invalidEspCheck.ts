@@ -11,11 +11,14 @@ export async function InvalidEspCheck(email: string) {
   }
 
   try {
-    const blacklistedEsp = await getBlacklistedDomains();;
+    const blacklistedEsp = await getBlacklistedDomains();
     const ev = new EmailValidation();
     ev.setOptions({ allowFreemail: true });
     ev.whitelist('rediff.com')
     ev.whitelist('rediffmail.com')
+    ev.whitelist('yahoo.co.in')
+    ev.whitelist('yahoo.in')
+    ev.whitelist('hotmail.com')
     blacklistedEsp.forEach((esp: {id: string, domain: string}) => {
       ev.blacklist(esp.domain);
     });

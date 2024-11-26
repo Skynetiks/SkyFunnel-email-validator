@@ -4,6 +4,7 @@ import { sendVerificationEmail } from "../email-verifier/sendMail.js";
 import { verifyEmailDeliveryStatus } from "../email-verifier/verifyUsingIMAP.js";
 import { describe, it, expect, beforeEach, vi, test } from "vitest";
 import { InvalidEspCheck } from "../email-verifier/invalidEspCheck.js";
+import { EmailVerifier } from "../email-verifier/index.js";
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ describe("Checking Imap Verification", () => {
       //   FAKE_EMAIL
       // );
       // expect(isEmailUndelivered).toBe(true);
-      InvalidEspCheck("aman@example.com")
+      EmailVerifier("skardam@appolosys.com")
     },
     { timeout: 100000 }
   );

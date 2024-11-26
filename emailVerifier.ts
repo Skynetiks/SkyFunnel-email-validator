@@ -4,7 +4,7 @@ import { EmailValidity } from "./types";
 export async function verifyEmail(email: string) {
 	let status: EmailValidity = "UNVERIFIED";
 
-	const isEmailValid = await EmailVerifier(email, "SkyNavigator");
+	const isEmailValid = await EmailVerifier(email);
 	// if (!isMXVerified) status = "INVALID";
 	// else if (!isSMTPVerified && !isEmailDelivered) status = "MXVERIFIED";
 	// else if (!isEmailDelivered) status = "SMTPVERIFIED";

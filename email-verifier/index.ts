@@ -5,8 +5,6 @@ import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
 
 export async function EmailVerifier(
   email: string,
-  firstName: string,
-  waitingTime = 500
 ) {
   if (!email) {
     throw new Error("Email is required.");
