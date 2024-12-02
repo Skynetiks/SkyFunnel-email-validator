@@ -1,42 +1,59 @@
-import { InvalidEspCheck } from "./invalidEspCheck";
-import { sendVerificationEmail } from "./sendMail";
-import { verifyEmailDeliveryStatus } from "./verifyUsingIMAP";
-import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
-import DNS2 from "dns2";
+import DNS2 from 'dns2';
 
-export async function EmailVerifier(
-  email: string,
-) {
+export async function EmailVerifier(email: string): Promise<boolean> {
   if (!email) {
     throw new Error("Email is required.");
   }
 
-  // const isEspValid = await InvalidEspCheck(email);
-  // if (!isEspValid) {
-  //   console.log(`[VerifyEmail] Email: ${email}, isEspValid: ${isEspValid}`);
-  //   return false;
-  // }
-
-  // const { isMXVerified, isSMTPVerified } = await checkMXRecordsAndSMTP(email);
   const splitEmail = email.trim().split('@');
+  if (splitEmail.length !== 2) {
+    throw new Error("Invalid email format.");
+  }
+
   const dns = new DNS2();
-	const mxRecords = (await dns.resolve(splitEmail[1], "MX")).answers;
 
+  // Define a custom type for MX record answers
+  type MxRecord = {
+    exchange: string;
+    priority: number;
+    name: string;
+    type: number;
+    class: number;
+    ttl: number;
+    address?: string;
+    domain?: string;
+    data?: string;
+  };
 
-  // console.log(`[VerifyEmail] Email: ${email}, isEmailValid: ${isEmailValid}`);
+  type ARecord = {
+    address: string;
+  }
 
-  // let isEmailDelivered = false;
+  try {
+    // Resolve the MX records for the domain
+    const mxRecords = (await dns.resolve(splitEmail[1], "MX")).answers as MxRecord[];
 
-  if (mxRecords.length > 0) {
-    // 	await sendVerificationEmail(email, firstName);
+    if (mxRecords.length === 0) {
+      console.log("No MX records found.");
+      return false;
+    }
 
-    // 	console.log(`[VerifyEmail] Sent verification email to: ${email}`);
+    for (const mx of mxRecords) {
+      const domain = mx.exchange; // Domain of the MX record
 
-    // 	await new Promise((resolve) => setTimeout(resolve, waitingTime));
+      // Resolve A records for the MX record domain
+      const aRecords = (await dns.resolve(domain, "A")).answers as ARecord[];
 
-    // 	const isEmailUndelivered = await verifyEmailDeliveryStatus("UndeliveredMail", email);
+      if (aRecords.length > 0) {
+        console.log(`MX record: ${domain} has valid A records: ${aRecords.map(record => record.address).join(', ')}`);
+        return true; // At least one MX record with an IP address is enough
+      }
+    }
 
-    // 	isEmailDelivered = !isEmailUndelivered;
-    return true;
+    console.log("No A records found for any MX record.");
+    return false;
+  } catch (error) {
+    console.error("Error resolving DNS:", error);
+    return false;
   }
 }

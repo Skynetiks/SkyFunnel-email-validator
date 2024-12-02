@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "Debug Worker",
             "command":"npx tsx worker.ts"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Test",
+            "command":"npx tsx test.ts"
         }
     ]
 }
