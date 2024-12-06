@@ -37,7 +37,7 @@ app.post("/verify-emails", async (req, res) => {
 		});
 	}
 
-	const taskId = userId || Math.round(new Date().getTime() * Math.random() * 1000);
+	const taskId = req.body.taskId || userId || Math.round(new Date().getTime() * Math.random() * 1000);
 	const redisData = {
 		taskId,
 		total: validatedEmails.data.length,
