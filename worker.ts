@@ -10,9 +10,10 @@ dotenv.config();
 
 type JobData = {
 	email: string;
-	organizationId: string | undefined;
+	organizationId: string;
 	contactListId: string | undefined;
 	taskId: number;
+	shouldUpdateLead: boolean;
 };
 
 // let maxMemory = 0;
@@ -73,6 +74,7 @@ const handleJob = async ({
 	organizationId,
 	contactListId,
 	taskId,
+	shouldUpdateLead = true,
 }: JobData) => {
 	let verificationStatus;
 
@@ -84,21 +86,25 @@ const handleJob = async ({
 	// 	verificationStatus = existingEmail.rows[0].emailStatus;
 	// 	console.log(email + " found in validated emails: " + verificationStatus)
 	// } else {
-		const verifiedEmail = await verifyEmail(email);
-		verificationStatus = verifiedEmail.status;
+	const verifiedEmail = await verifyEmail(email);
+	verificationStatus = verifiedEmail.status;
 	// }
 
-	if (organizationId) {
-		// console.log(`Updating organization's lead's ${email} email status`);
-		await updateLeadStatusUsingOrgId(organizationId, email, verificationStatus);
-	} else if (contactListId) {
-		// console.log(`Updating contact list's lead's ${email} email status`);
-		await updateLeadStatusUsingContactListId(
-			contactListId,
-			email,
-			verificationStatus
-		);
+	if (shouldUpdateLead) {
+		if (contactListId) {
+			// console.log(`Updating contact list's lead's ${email} email status`);
+			await updateLeadStatusUsingContactListId(
+				contactListId,
+				email,
+				verificationStatus
+			);
+		} else {
+			// console.log(`Updating organization's lead's ${email} email status`);
+			await updateLeadStatusUsingOrgId(organizationId, email, verificationStatus);
+		}
 	}
+
+	await query('UPDATE "Organization" SET "emailVerificationCount" = "emailVerificationCount" + 1 WHERE "id" = $1', [organizationId]);
 	// console.log(`adding to ValidatedEmail ${email} email status: ${verificationStatus}`);
 	await addToValidatedEmail(email, verificationStatus, taskId);
 };

@@ -28,7 +28,7 @@ app.post("/verify-emails", async (req, res) => {
 		return;
 	}
 
-	const { emails, organizationId, contactListId, userId } = req.body;
+	const { emails, organizationId, contactListId, userId, shouldUpdateLead } = req.body;
 	const validatedEmails = z.array(z.string()).nonempty().safeParse(emails);
 	if (!validatedEmails.success) {
 		return res.status(400).json({
@@ -59,7 +59,7 @@ app.post("/verify-emails", async (req, res) => {
 	await client.expire(`taskId:${taskId}`, 86400 * 3); // 3 days
 
 	try {
-		await addEmailsToQueue({ emails: validatedEmails.data, organizationId, contactListId, taskId });
+		await addEmailsToQueue({ emails: validatedEmails.data, organizationId, contactListId, taskId, shouldUpdateLead });
 
 		res.status(200).json({
 			success: true,
