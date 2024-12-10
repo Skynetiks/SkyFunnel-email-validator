@@ -1,8 +1,14 @@
 import DNS2 from 'dns2';
+import { misspelledCheck } from './misspelledCheck';
 
 export async function EmailVerifier(email: string): Promise<boolean> {
   if (!email) {
     throw new Error("Email is required.");
+  }
+
+  const isMisspelled = await misspelledCheck(email);
+  if(isMisspelled) {
+    return false
   }
 
   const splitEmail = email.trim().split('@');
