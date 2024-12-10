@@ -2,6 +2,7 @@ import DNS2 from 'dns2';
 import { misspelledCheck } from './misspelledCheck';
 
 export async function EmailVerifier(email: string): Promise<boolean> {
+  email = email.trim();
   if (!email) {
     throw new Error("Email is required.");
   }
@@ -11,7 +12,7 @@ export async function EmailVerifier(email: string): Promise<boolean> {
     return false
   }
 
-  const splitEmail = email.trim().split('@');
+  const splitEmail = email.split('@');
   if (splitEmail.length !== 2) {
     throw new Error("Invalid email format.");
   }
