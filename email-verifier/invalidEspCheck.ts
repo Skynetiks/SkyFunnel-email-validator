@@ -4,12 +4,6 @@ import { query } from "../db.js";
 import { getRedisConnection } from "../redis.js";
 
 export async function InvalidEspCheck(email: string) {
-  const emailChecker = emailMisspelled({ domains: all });
-  const result2 = emailChecker(email);
-  if (result2.length > 0) {
-    return false;
-  }
-
   try {
     const blacklistedEsp = await getBlacklistedDomains();
     const ev = new EmailValidation();
