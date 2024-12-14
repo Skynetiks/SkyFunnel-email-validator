@@ -3,11 +3,11 @@ import EmailValidation from "emailvalid";
 import { query } from "../db.js";
 import { getRedisConnection } from "../redis.js";
 
-export async function InvalidEspCheck(email: string) {
+export async function blacklistedEspCheck(email: string) {
   try {
     const blacklistedEsp = await getBlacklistedDomains();
     const ev = new EmailValidation();
-    ev.setOptions({ allowFreemail: true });
+    ev.setOptions({ allowFreemail: true,  });
     ev.whitelist('rediff.com')
     ev.whitelist('rediffmail.com')
     ev.whitelist('yahoo.co.in')
@@ -18,12 +18,12 @@ export async function InvalidEspCheck(email: string) {
     });
     const result = ev.check(email);
     if (!result.valid) {
-      return false;
+      return true;
     }
   } catch (e) {
     console.error("Error while fetching blacklisted esp");
   }
-  return true;
+  return false;
 }
 
 async function getBlacklistedDomains() {
