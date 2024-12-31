@@ -67,6 +67,8 @@ export async function EmailVerifier(email: string): Promise<boolean> {
     const data:EmailVerificationResponse = await response.json();
     if(data.reachable === "yes"){
       return true;
+    } else if(data.smtp.catch_all == true) {
+      return true;
     } else {
       return false;
     }
