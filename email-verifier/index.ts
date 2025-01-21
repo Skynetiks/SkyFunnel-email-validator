@@ -59,7 +59,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
   }
 
   try {
-    const response = await fetch(`http://64.23.239.176:8080/v1/${email}/verification`, {
+    const response = await fetch(`http://localhost:8080/v1/${email}/verification`, {
       method: 'GET',
       headers: {
         'Authorization': `${process.env.AUTH_TOKEN}`,
