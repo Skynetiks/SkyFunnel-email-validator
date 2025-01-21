@@ -1,3 +1,3 @@
 import { EmailVerifier } from "./email-verifier";
 
-EmailVerifier("aman@skyfunnel.ai")
+console.log(await EmailVerifier("aman@skynetiks.com"))

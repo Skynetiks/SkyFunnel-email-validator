@@ -2,6 +2,7 @@ import { misspelledCheck } from "./misspelledCheck";
 import { blacklistedEspCheck } from "./blacklistedEspCheck";
 import { mxCheck } from "./mxCheck";
 import { blacklistedEmailCheck } from "./blacklistedEmailCheck";
+import { EmailValidity } from "../types";
 
 interface Syntax {
   username: string;
@@ -31,7 +32,7 @@ interface EmailVerificationResponse {
 }
 
 
-export async function EmailVerifier(email: string): Promise<boolean> {
+export async function EmailVerifier(email: string): Promise<EmailValidity> {
   email = email.trim();
   if (!email) {
     throw new Error("Email is required.");
@@ -39,26 +40,26 @@ export async function EmailVerifier(email: string): Promise<boolean> {
 
   const isMisspelled = await misspelledCheck(email);
   if (isMisspelled) {
-    return false;
+    return "INVALID";
   }
 
   const isESPBlacklisted = await blacklistedEspCheck(email);
   if (isESPBlacklisted) {
-    return false;
+    return "INVALID";
   }
 
   const isEmailBlacklisted = await blacklistedEmailCheck(email);
   if (isEmailBlacklisted) {
-    return false;
+    return "INVALID";
   }
 
   const isMxValid = await mxCheck(email);
   if (!isMxValid) {
-    return false;
+    return "INVALID";
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/v1/${email}/verification`, {
+    const response = await fetch(`http://64.23.239.176:8080/v1/${email}/verification`, {
       method: 'GET',
       headers: {
         'Authorization': `${process.env.AUTH_TOKEN}`,
@@ -66,15 +67,15 @@ export async function EmailVerifier(email: string): Promise<boolean> {
     });
     const data:EmailVerificationResponse = await response.json();
     if(data.reachable === "yes"){
-      return true;
-    } else if(data.smtp.catch_all == true) {
-      return true;
+      return "VALID";
+    } else if(data.smtp.catch_all) {
+      return "CATCHALL";
     } else {
-      return false;
+      return "INVALID";
     }
   } catch (error) {
     console.error('Error verifying email via API:', error);
-    return false
+    return "INVALID"
   }
 
 }
