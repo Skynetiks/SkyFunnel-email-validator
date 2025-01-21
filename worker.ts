@@ -2,9 +2,9 @@ import { Worker } from "bullmq";
 import dotenv from "dotenv";
 
 import { getRedisConnection } from "./redis";
-import { verifyEmail } from "./emailVerifier";
 import { query } from "./db";
 import { EmailValidity } from "./types";
+import { EmailVerifier } from "./email-verifier";
 
 dotenv.config();
 
@@ -76,8 +76,6 @@ const handleJob = async ({
 	taskId,
 	shouldUpdateLead = true,
 }: JobData) => {
-	let verificationStatus;
-
 	// const existingEmail = await query(
 	// 	'SELECT * FROM "ValidatedEmail" WHERE "email" = $1',
 	// 	[email]
@@ -86,8 +84,7 @@ const handleJob = async ({
 	// 	verificationStatus = existingEmail.rows[0].emailStatus;
 	// 	console.log(email + " found in validated emails: " + verificationStatus)
 	// } else {
-	const verifiedEmail = await verifyEmail(email);
-	verificationStatus = verifiedEmail.status;
+	const status = await EmailVerifier(email);;
 	// }
 
 	if (shouldUpdateLead) {
@@ -96,17 +93,17 @@ const handleJob = async ({
 			await updateLeadStatusUsingContactListId(
 				contactListId,
 				email,
-				verificationStatus
+				status
 			);
 		} else {
 			// console.log(`Updating organization's lead's ${email} email status`);
-			await updateLeadStatusUsingOrgId(organizationId, email, verificationStatus);
+			await updateLeadStatusUsingOrgId(organizationId, email, status);
 		}
 	}
 
 	await query('UPDATE "Organization" SET "emailVerificationCount" = "emailVerificationCount" + 1 WHERE "id" = $1', [organizationId]);
 	// console.log(`adding to ValidatedEmail ${email} email status: ${verificationStatus}`);
-	await addToValidatedEmail(email, verificationStatus, taskId);
+	await addToValidatedEmail(email, status, taskId);
 };
 
 export async function initializeWorker() {
