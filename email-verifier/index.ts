@@ -45,7 +45,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
 
   const isESPBlacklisted = await blacklistedEspCheck(email);
   if (isESPBlacklisted) {
-    return "INVALID";
+    return "UNKNOWN";
   }
 
   const isEmailBlacklisted = await blacklistedEmailCheck(email);
@@ -75,7 +75,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     }
   } catch (error) {
     console.error('Error verifying email via API:', error);
-    return "INVALID"
+    return "UNKNOWN"
   }
 
 }
