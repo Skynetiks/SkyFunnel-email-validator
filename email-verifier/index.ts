@@ -29,6 +29,7 @@ interface EmailVerificationResponse {
   role_account: boolean;
   free: boolean;
   has_mx_records: boolean;
+  error: string;
 }
 
 
@@ -66,13 +67,22 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
       },
     });
     const data:EmailVerificationResponse = await response.json();
-    if(data.reachable === "yes"){
-      return "VALID";
-    } else if(data.smtp.catch_all) {
-      return "CATCHALL";
+    if(response.ok){
+      if(data.reachable === "yes"){
+        console.log(`Email ${email} is Valid`)
+        return "VALID";
+      } else if(data.smtp.catch_all) {
+        console.log(`Domain for ${email} is Catch all`)
+        return "CATCHALL";
+      } else {
+        console.log(`Email ${email} is Invalid`)
+        return "INVALID";
+      }
     } else {
-      return "INVALID";
+      console.error('Error from proxy server', data.error);
+      return "UNKNOWN"
     }
+   
   } catch (error) {
     console.error('Error verifying email via API:', error);
     return "UNKNOWN"
