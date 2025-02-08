@@ -18,6 +18,7 @@ export async function blacklistedEspCheck(email: string) {
     });
     const result = ev.check(email);
     if (!result.valid) {
+      console.log(`ESP for ${email} is blacklisted`)
       return true;
     }
   } catch (e) {
