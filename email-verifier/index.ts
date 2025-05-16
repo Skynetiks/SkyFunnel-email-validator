@@ -1,33 +1,91 @@
-import { sendVerificationEmail } from "./sendMail";
-import { verifyEmailUsingIMAP } from "./verifyUsingIMAP";
-import { checkMXRecordsAndSMTP } from "./verifyUsingMXAndSMTP";
+import { misspelledCheck } from "./misspelledCheck";
+import { blacklistedEspCheck } from "./blacklistedEspCheck";
+import { mxCheck } from "./mxCheck";
+import { blacklistedEmailCheck } from "./blacklistedEmailCheck";
+import { EmailValidity } from "../types";
 
-export async function EmailVerifier(email: string, firstName: string, verificationByIMAP = true, waitingTime = 2000) {
-	if (!email) {
-		throw new Error("Email is required.");
-	}
+interface Syntax {
+  username: string;
+  domain: string;
+  valid: boolean;
+}
 
-	const { isMXVerified, isSMTPVerified } = await checkMXRecordsAndSMTP(email);
+interface Smtp {
+  host_exists: boolean;
+  full_inbox: boolean;
+  catch_all: boolean;
+  deliverable: boolean;
+  disabled: boolean;
+}
 
-	// console.log(`[VerifyEmail] Email: ${email}, isEmailValid: ${isEmailValid}`);
+interface EmailVerificationResponse {
+  email: string;
+  reachable: string;
+  syntax: Syntax;
+  smtp: Smtp;
+  gravatar: string | null;
+  suggestion: string;
+  disposable: boolean;
+  role_account: boolean;
+  free: boolean;
+  has_mx_records: boolean;
+  error: string;
+}
 
-	let isEmailDelivered = undefined;
 
-	if (isMXVerified && verificationByIMAP) {
-		await sendVerificationEmail(email, firstName);
+export async function EmailVerifier(email: string): Promise<EmailValidity> {
+  email = email.trim();
+  if (!email) {
+    throw new Error("Email is required.");
+  }
 
-		console.log(`[VerifyEmail] Sent verification email to: ${email}`);
+  const isMisspelled = await misspelledCheck(email);
+  if (isMisspelled) {
+    return "INVALID";
+  }
 
-		await new Promise((resolve) => setTimeout(resolve, waitingTime));
+  const isESPBlacklisted = await blacklistedEspCheck(email);
+  if (isESPBlacklisted) {
+    return "UNKNOWN";
+  }
 
-		const isEmailUndelivered = await verifyEmailUsingIMAP("UndeliveredMail", email);
+  const isEmailBlacklisted = await blacklistedEmailCheck(email);
+  if (isEmailBlacklisted) {
+    return "INVALID";
+  }
 
-		isEmailDelivered = !isEmailUndelivered;
-	}
+  const isMxValid = await mxCheck(email);
+  if (!isMxValid) {
+    return "INVALID";
+  }
 
-	return {
-		isMXVerified,
-		isSMTPVerified,
-		isEmailDelivered,
-	};
+  try {
+    const response = await fetch(`http://localhost:8080/v1/${email}/verification`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `${process.env.AUTH_TOKEN}`,
+      },
+    });
+    const data:EmailVerificationResponse = await response.json();
+    if(response.ok){
+      if(data.reachable === "yes"){
+        console.log(`Email ${email} is Valid`)
+        return "VALID";
+      } else if(data.smtp.catch_all) {
+        console.log(`Domain for ${email} is Catch all`)
+        return "CATCHALL";
+      } else {
+        console.log(`Email ${email} is Invalid`)
+        return "INVALID";
+      }
+    } else {
+      console.error('Error from proxy server', data.error);
+      return "UNKNOWN"
+    }
+   
+  } catch (error) {
+    console.error('Error verifying email via API:', error);
+    return "UNKNOWN"
+  }
+
 }

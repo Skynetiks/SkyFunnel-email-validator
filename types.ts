@@ -1,1 +1,1 @@
-export type EmailValidity = "UNVERIFIED" | "INVALID" | "MXVERIFIED" | "SMTPVERIFIED" | "VALID";
+export type EmailValidity = "UNVERIFIED" | "INVALID" | "MXVERIFIED" | "SMTPVERIFIED" | "CATCHALL" |"VALID" | "UNKNOWN";
