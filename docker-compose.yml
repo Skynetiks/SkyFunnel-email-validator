@@ -1,8 +1,16 @@
 services:
   app:
-    build: .
+    build: ./email-validator-gateway
     env_file:
-      - .env.production
+      - ./email-validator-gateway/.env.production
     ports:
-      - "${PORT}:${PORT}"
+      - "3000:3000"
+    restart: unless-stopped
+
+  go_service:
+    build: ./email-validator-go
+    env_file:
+      - ./email-validator-go/.env.production
+    ports:
+      - "8080:8080"
     restart: unless-stopped
