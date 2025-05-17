@@ -60,8 +60,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
   }
 
   try {
-    console.log("Calling email verifier API at:", `http://skyfunnel-email-validator-go_service:8080/v1/${email}/verification`);;
-    const response = await fetch(`http://skyfunnel-email-validator-go_service:8080/v1/${email}/verification`, {
+    const response = await fetch(`http://localhost:8080/v1/${email}/verification`, {
       method: 'GET',
       headers: {
         'Authorization': `${process.env.AUTH_TOKEN}`,
