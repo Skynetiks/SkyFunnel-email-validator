@@ -167,7 +167,7 @@ func BulkEmailVerification(w http.ResponseWriter, r *http.Request, _ httprouter.
 
 func main() {
 	// Load .env file if it exists
-	err := godotenv.Load()
+	err := godotenv.Load(".env.production")
 	if err != nil {
 		log.Println("No .env file found. Make sure to set environment variables manually.")
 	}
