@@ -67,7 +67,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
       },
     });
     const unparsedData = await response.json();
-    console.log(`Response from go server: ${JSON.stringify(unparsedData)}`);
+    console.error(`Response from go server: ${JSON.stringify(unparsedData)}`);
     const data:EmailVerificationResponse = unparsedData;
     if(response.ok){
       if(data.reachable === "yes"){
