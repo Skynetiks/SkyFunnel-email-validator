@@ -66,7 +66,9 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
         'Authorization': `${process.env.AUTH_TOKEN}`,
       },
     });
-    const data:EmailVerificationResponse = await response.json();
+    const unparsedData = await response.json();
+    console.log(`Response from go server: ${JSON.stringify(unparsedData)}`);
+    const data:EmailVerificationResponse = unparsedData;
     if(response.ok){
       if(data.reachable === "yes"){
         console.log(`Email ${email} is Valid`)
