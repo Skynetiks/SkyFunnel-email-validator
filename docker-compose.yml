@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build: ./email-validator-gateway
@@ -6,6 +8,8 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    networks:
+      - skyfunnel-net
 
   go_service:
     build: ./email-validator-go
@@ -14,3 +18,8 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+    networks:
+      - skyfunnel-net
+
+networks:
+  skyfunnel-net:
