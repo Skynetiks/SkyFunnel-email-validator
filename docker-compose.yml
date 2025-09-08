@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: ${IMAGE_NAME }:latest
+    image: ${APP_IMAGE_NAME}:latest
     env_file:
       - ./email-validator-gateway/.env.production
     ports:
@@ -12,7 +12,7 @@ services:
       - skyfunnel-net
 
   go_service:
-    image: ${IMAGE_NAME }:latest
+    image: ${GO_IMAGE_NAME}:latest
     env_file:
       - ./email-validator-go/.env.production
     ports:
