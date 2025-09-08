@@ -30,4 +30,4 @@ jobs:
           chmod +x /home/actions/scripts/reload.sh
           APP_IMAGE_NAME=$APP_IMAGE_NAME \
           GO_IMAGE_NAME=$GO_IMAGE_NAME \
-          /home/actions/scripts/reload.sh
+          sudo /home/actions/scripts/reload.sh

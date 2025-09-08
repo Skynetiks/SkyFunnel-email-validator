@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO_PATH="/home/root/SkyFunnel-email-validator"
+REPO_PATH="/root/SkyFunnel-email-validator"
 DOCKER_COMPOSE_FILE="$REPO_PATH/docker-compose.yml"
 
 # Export image names from workflow env
