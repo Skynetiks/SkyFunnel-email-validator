@@ -39,7 +39,7 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     throw new Error("Email is required.");
   }
 
-  const isMisspelled = await misspelledCheck(email);
+  const isMisspelled = misspelledCheck(email);
   if (isMisspelled) {
     return "INVALID";
   }
@@ -68,10 +68,10 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     });
     const data:EmailVerificationResponse = await response.json();
     if(response.ok){
-      if(data.reachable === "yes"){
+      if(data.reachable === "yes" && data.syntax && data.syntax.valid) {
         console.log(`Email ${email} is Valid`)
         return "VALID";
-      } else if(data.smtp.catch_all) {
+      } else if(data.smtp && data.smtp.catch_all) {
         console.log(`Domain for ${email} is Catch all`)
         return "CATCHALL";
       } else {

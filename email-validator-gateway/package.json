@@ -8,7 +8,9 @@
     "start": "concurrently \"npx tsx server.ts\" \"npx tsx worker.ts\"",
     "start:server": "tsc && node ./dist/server.js",
     "start:worker": "tsc && node ./dist/worker.js",
-    "dev": "set DEBUG=express:* & npx ts-node server.ts"
+    "dev": "set DEBUG=express:* & npx ts-node server.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +36,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/body-parser": "^1.19.5",
     "@types/dns2": "^2.0.9",
     "@types/express": "^4.17.21",
@@ -42,7 +45,11 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.2",
     "@types/nodemailer": "^6.4.16",
+    "@typescript-eslint/eslint-plugin": "^8.46.4",
+    "@typescript-eslint/parser": "^8.46.4",
     "concurrently": "^9.0.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
     "tsx": "^4.19.1",
     "typescript": "^5.4.5",
     "vitest": "^2.1.4"

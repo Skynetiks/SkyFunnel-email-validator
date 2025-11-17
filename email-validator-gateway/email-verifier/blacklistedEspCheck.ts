@@ -1,4 +1,3 @@
-import emailMisspelled, { all } from "email-misspelled";
 import EmailValidation from "emailvalid";
 import { query } from "../db.js";
 import { getRedisConnection } from "../redis.js";
@@ -22,13 +21,13 @@ export async function blacklistedEspCheck(email: string) {
       return true;
     }
   } catch (e) {
-    console.error("Error while fetching blacklisted esp");
+    console.error("Error while fetching blacklisted esp data:", e);
   }
   return false;
 }
 
 async function getBlacklistedDomains() {
-    const redis = await getRedisConnection();
+    const redis = getRedisConnection();
     const cacheKey = "blacklistedDomains";
   
     // Check if domains are already cached in Redis

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { z } from "zod";
@@ -11,11 +11,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Async handler wrapper for Express routes
+const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
+
 app.use(express.urlencoded({ extended: true, limit: "200mb" }));
 app.use(express.json({ limit: "200mb" }));
 app.use(morgan("tiny"));
 
-app.post("/verify-emails", async (req, res) => {
+app.post("/verify-emails", asyncHandler(async (req, res) => {
 	const authToken = req.headers['authorization'];
 
 	if (!authToken) {
@@ -46,7 +53,7 @@ app.post("/verify-emails", async (req, res) => {
 		completed: 0,
 	};
 
-	const client = await getRedisConnection();
+	const client = getRedisConnection();
 
 	if (!client) {
 		return res.status(500).json({
@@ -66,16 +73,17 @@ app.post("/verify-emails", async (req, res) => {
 			message: "Emails added to queue",
 			taskId,
 		});
-	} catch (error: any) {
-		console.error(`Failed to add emails to queue: ${error.message}`);
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : "Unknown error";
+		console.error(`Failed to add emails to queue: ${errorMessage}`);
 		res.status(500).json({
 			success: false,
 			message: "Failed to add emails to queue",
 		});
 	}
-});
+}));
 
-app.post("/check-status", async (req, res) => {
+app.post("/check-status", asyncHandler(async (req, res) => {
 	try {
 		const { taskId } = req.body;
 		if (!taskId) {
@@ -85,7 +93,7 @@ app.post("/check-status", async (req, res) => {
 			});
 		}
 
-		const client = await getRedisConnection();
+		const client = getRedisConnection();
 		if (!client) {
 			return res.status(500).json({
 				success: false,
@@ -104,13 +112,13 @@ app.post("/check-status", async (req, res) => {
 				failed
 			}
 		});
-	} catch (error) {
+	} catch {
 		return res.status(500).json({
 			success: false,
 			message: "Failed to get redis connection",
 		});
 	}
-});
+}));
 
 app.get("/", (_, res) => {
 	res.sendStatus(200);

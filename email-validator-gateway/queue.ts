@@ -11,7 +11,7 @@ type Props = {
 export async function addEmailsToQueue({ emails, organizationId, contactListId, taskId, shouldUpdateLead }: Props) {
 	const emailQueue = await getEmailQueue();
 
-	emailQueue.addBulk(emails.map((email, i) => ({
+	await emailQueue.addBulk(emails.map((email, i) => ({
 		name: `verify-email-${i}`,
 		data: { email: email, organizationId, contactListId, taskId, shouldUpdateLead },
 		opts: {

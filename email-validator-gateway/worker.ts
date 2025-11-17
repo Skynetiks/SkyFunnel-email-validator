@@ -110,8 +110,8 @@ const handleJob = async ({
   }
 };
 
-export async function initializeWorker() {
-  const connection = await getRedisConnection();
+export function initializeWorker() {
+  const connection = getRedisConnection();
   if (!connection) {
     throw new Error("Redis connection not available");
   }
@@ -121,11 +121,7 @@ export async function initializeWorker() {
   const worker = new Worker(
     "verify-email-queue",
     async (job) => {
-      try {
-        await handleJob(job.data);
-      } catch (error) {
-        throw error;
-      }
+      await handleJob(job.data);
 
       // console.log(job.id);
       // maxMemory = Math.max(maxMemory, process.memoryUsage().heapUsed);
@@ -141,17 +137,17 @@ export async function initializeWorker() {
 
   console.log("Worker initialized");
 
-  worker.on("completed", async (job) => {
+  worker.on("completed", (job) => {
     console.log(`Job completed with result ${JSON.stringify(job.returnvalue)}`);
     if (job.data.taskId && job.id) {
-      await onTaskComplete(job.data.taskId, job.id);
+      void onTaskComplete(job.data.taskId, job.id);
     }
   });
 
-  worker.on("failed", async (job, err) => {
+  worker.on("failed", (job, err) => {
     console.log(`Job failed with error ${err.message}`);
     if (job && job.data.taskId && job.id) {
-      await onTaskFail(job.data.taskId, job.id);
+      void onTaskFail(job.data.taskId, job.id);
     }
   });
 
@@ -160,12 +156,10 @@ export async function initializeWorker() {
   });
 }
 
-(async () => {
-  await initializeWorker();
-})();
+initializeWorker();
 
 async function onTaskComplete(taskId: number, jobId: string) {
-  const client = await getRedisConnection();
+  const client = getRedisConnection();
   if (!client) {
     return;
   }
@@ -195,7 +189,7 @@ async function onTaskComplete(taskId: number, jobId: string) {
 }
 
 async function onTaskFail(taskId: number, jobId: string) {
-  const client = await getRedisConnection();
+  const client = getRedisConnection();
   if (!client) {
     return;
   }

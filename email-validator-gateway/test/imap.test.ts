@@ -9,7 +9,7 @@ describe("Checking Imap Verification", () => {
   it(
     "Should Return True For Undelivered Mail",
     async () => {
-      EmailVerifier("skardam@appolosys.com")
+      await EmailVerifier("skardam@appolosys.com");
     },
     { timeout: 100000 }
   );

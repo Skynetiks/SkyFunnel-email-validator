@@ -11,7 +11,7 @@ export async function blacklistedEmailCheck(email: string) {
       return true;
     }
   } catch (e) {
-    console.error("Error while fetching blacklisted Email");
+    console.error("Error while fetching blacklisted Email data:", e);
   }
   return false;
 }
