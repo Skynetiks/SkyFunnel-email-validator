@@ -126,7 +126,7 @@ export function initializeWorker() {
     },
     {
       connection,
-      concurrency: 1,
+      concurrency: 3,
     }
   );
 

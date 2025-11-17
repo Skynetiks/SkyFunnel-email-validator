@@ -18,7 +18,7 @@ export async function addEmailsToQueue({ emails, organizationId, contactListId, 
 			jobId:`verify-email-${email}`,
 			removeOnComplete: true,
 			removeOnFail: true,
-			attempts: 3,
+			attempts: 2,
 			delay: 2000,
 			backoff: {
 				type: "exponential",

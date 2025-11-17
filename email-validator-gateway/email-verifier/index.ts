@@ -1,8 +1,22 @@
 import { misspelledCheck } from "./misspelledCheck";
 import { blacklistedEspCheck } from "./blacklistedEspCheck";
-import { mxCheck } from "./mxCheck";
 import { blacklistedEmailCheck } from "./blacklistedEmailCheck";
 import { EmailValidity } from "../types";
+
+// Known valid domains - skip preliminary checks for these
+const KNOWN_VALID_DOMAINS = new Set([
+  // Google
+  'gmail.com', 'googlemail.com',
+  // Microsoft
+  'outlook.com', 'hotmail.com', 'live.com', 'msn.com', 'outlook.in',
+  // Yahoo
+  'yahoo.com', 'yahoo.co.uk', 'yahoo.in', 'yahoo.co.in', 'ymail.com',
+  // Apple
+  'icloud.com', 'me.com', 'mac.com',
+  // Other major providers
+  'protonmail.com', 'proton.me', 'aol.com', 'zoho.com', 'mail.com',
+  'gmx.com', 'gmx.net', 'yandex.com', 'mail.ru',
+]);
 
 interface Syntax {
   username: string;
@@ -39,25 +53,30 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     throw new Error("Email is required.");
   }
 
-  const isMisspelled = misspelledCheck(email);
-  if (isMisspelled) {
-    return "INVALID";
+  // Extract domain from email
+  const domain = email.split('@')[1]?.toLowerCase();
+  const isKnownDomain = domain && KNOWN_VALID_DOMAINS.has(domain);
+
+  // Fast path for known valid domains - skip preliminary checks
+  if (!isKnownDomain) {
+    const isMisspelled = misspelledCheck(email);
+    if (isMisspelled) {
+      return "INVALID";
+    }
+
+    const isESPBlacklisted = await blacklistedEspCheck(email);
+    if (isESPBlacklisted) {
+      return "UNKNOWN";
+    }
   }
 
-  const isESPBlacklisted = await blacklistedEspCheck(email);
-  if (isESPBlacklisted) {
-    return "UNKNOWN";
-  }
-
+  // Always check if specific email is blacklisted (even for known domains)
   const isEmailBlacklisted = await blacklistedEmailCheck(email);
   if (isEmailBlacklisted) {
     return "INVALID";
   }
 
-  const isMxValid = await mxCheck(email);
-  if (!isMxValid) {
-    return "INVALID";
-  }
+  // MX check removed - external API already validates MX records (has_mx_records field)
 
   try {
     const response = await fetch(`http://go_service:8080/v1/${email}/verification`, {

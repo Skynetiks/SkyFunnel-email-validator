@@ -12,6 +12,7 @@ export async function blacklistedEspCheck(email: string) {
     ev.whitelist('yahoo.co.in')
     ev.whitelist('yahoo.in')
     ev.whitelist('hotmail.com')
+    ev.whitelist('googlemail.com')
     blacklistedEsp.forEach((esp: {id: string, domain: string}) => {
       ev.blacklist(esp.domain);
     });
