@@ -2,6 +2,7 @@ import { misspelledCheck } from "./misspelledCheck";
 import { blacklistedEspCheck } from "./blacklistedEspCheck";
 import { blacklistedEmailCheck } from "./blacklistedEmailCheck";
 import { EmailValidity } from "../types";
+import { mxCheck } from "./mxCheck";
 
 // Known valid domains - skip preliminary checks for these
 const KNOWN_VALID_DOMAINS = new Set([
@@ -53,11 +54,18 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     throw new Error("Email is required.");
   }
 
+  // Always check if specific email is blacklisted (even for known domains)
+  const isEmailBlacklisted = await blacklistedEmailCheck(email);
+  if (isEmailBlacklisted) {
+    return "INVALID";
+  }
+
   // Extract domain from email
   const domain = email.split('@')[1]?.toLowerCase();
   const isKnownDomain = domain && KNOWN_VALID_DOMAINS.has(domain);
 
-  // Fast path for known valid domains - skip preliminary checks
+  // For unknown domains: do all validation checks
+  // For known domains (Gmail, Outlook, etc.): skip checks and go straight to API
   if (!isKnownDomain) {
     const isMisspelled = misspelledCheck(email);
     if (isMisspelled) {
@@ -68,16 +76,14 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
     if (isESPBlacklisted) {
       return "UNKNOWN";
     }
+
+    const isMxValid = await mxCheck(email);
+    if (!isMxValid) {
+      return "INVALID";
+    }
   }
 
-  // Always check if specific email is blacklisted (even for known domains)
-  const isEmailBlacklisted = await blacklistedEmailCheck(email);
-  if (isEmailBlacklisted) {
-    return "INVALID";
-  }
-
-  // MX check removed - external API already validates MX records (has_mx_records field)
-
+  // External API verification (for both known and unknown domains)
   try {
     const response = await fetch(`http://go_service:8080/v1/${email}/verification`, {
       method: 'GET',
