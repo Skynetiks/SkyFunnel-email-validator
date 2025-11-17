@@ -64,7 +64,7 @@ async function addToValidatedEmail(
   taskId: number
 ) {
   await query(
-    'INSERT INTO "ValidatedEmail" ("id", "taskId", "email", "emailStatus") VALUES (uuid_generate_v4(), $1, $2, $3)',
+    'INSERT INTO "ValidatedEmail" ("id", "taskId", "email", "emailStatus") VALUES (uuid_generate_v4(), $1, $2, $3) ON CONFLICT ("taskId", "email") DO UPDATE SET "emailStatus" = EXCLUDED."emailStatus"',
     [taskId, email, status]
   );
 }
@@ -101,13 +101,8 @@ const handleJob = async ({
     'UPDATE "Organization" SET "emailVerificationCount" = "emailVerificationCount" + 1 WHERE "id" = $1',
     [organizationId]
   );
-  // console.log(`adding to ValidatedEmail ${email} email status: ${verificationStatus}`);
 
-  try {
-    await addToValidatedEmail(email, status, taskId);
-  } catch (error) {
-    console.log(error);
-  }
+  await addToValidatedEmail(email, status, taskId);
 };
 
 export function initializeWorker() {
