@@ -3,6 +3,7 @@ import { blacklistedEspCheck } from "./blacklistedEspCheck";
 import { blacklistedEmailCheck } from "./blacklistedEmailCheck";
 import { EmailValidity } from "../types";
 import { mxCheck } from "./mxCheck";
+import validator from "validator";
 
 // Known valid domains - skip preliminary checks for these
 const KNOWN_VALID_DOMAINS = new Set([
@@ -52,6 +53,12 @@ export async function EmailVerifier(email: string): Promise<EmailValidity> {
   email = email.trim();
   if (!email) {
     throw new Error("Email is required.");
+  }
+
+  // Validate email format according to RFC 5321/5322
+  // This catches invalid formats like trailing dots (e.g., user@domain.com.)
+  if (!validator.isEmail(email)) {
+    return "INVALID";
   }
 
   // Always check if specific email is blacklisted (even for known domains)
